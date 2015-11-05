@@ -393,6 +393,22 @@ Backbone.Validation = (function(_){
           collection.bind('add', collectionAdd, {view: view, options: options});
           collection.bind('remove', collectionRemove);
         }
+
+        // Add blur events on validated inputs
+        if(options.inline){
+          var rulesAttr = Object.keys(model.validation());
+
+          rulesAttr.map(function(rule){
+            view.events['blur [name='+rule+']'] = 'validateInput';
+          });
+
+          view.validateInput = function(event){
+            var attr = {};
+            attr[event.currentTarget.name] = event.currentTarget.value;
+            model.isValid(event.currentTarget.name);
+          };
+          view.delegateEvents();
+        }
       },
 
       // Removes validation from a view with a model
